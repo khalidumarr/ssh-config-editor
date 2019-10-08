@@ -1,3 +1,4 @@
+/*eslint-disable */
 const state = {
   dialog: false,
   items: {
@@ -56,14 +57,11 @@ const mutations = {
   ADD_GENERAL_CONFIG(state, config) {
     state.items.general.push(config)
   },
-  REMOVE_GENERAL_CONFIG(state, indexToRemove) {
-    var index = state.items.general.indexOf(indexToRemove)
-    if (index > -1) {
-      state.items.general = state.items.general.splice(index, 1)
-    }    
+  REMOVE_GENERAL_CONFIG(state, data) {       
+    state.items.general.splice(data.index, 1)    
   },
-  UPDATE_GENERAL_CONFIG(state, index, value) {
-    state.items.general[index] = value
+  UPDATE_GENERAL_CONFIG(state, data) {        
+    state.items.general[data.index].value = data.value
   },
   ADD_HOST(state, host) {
     state.items.specific.push(host)
@@ -91,16 +89,22 @@ const mutations = {
 
 const actions = {
   addGeneralConfig({ commit, state }, data) {
-    // do something async
-    commit('ADD_GENERAL_CONFIG');
+    return new Promise((resolve, reject) => {      
+      commit('ADD_GENERAL_CONFIG', data);
+      resolve()
+    });        
   },
   removeGeneralConfig({ commit, state }, data) {
-    // do something async
-    commit('REMOVE_GENERAL_CONFIG');
+    return new Promise((resolve, reject) => {      
+      commit('REMOVE_GENERAL_CONFIG', data);
+      resolve()
+    });            
   },
   updateGeneralConfig({ commit, state }, data) {
-    // do something async
-    commit('UPDATE_GENERAL_CONFIG');
+    return new Promise((resolve, reject) => {
+      commit('UPDATE_GENERAL_CONFIG', data);
+      resolve()
+    });    
   },
   addHost({ commit, state }, data) {
     // do something async

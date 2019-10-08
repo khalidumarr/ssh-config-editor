@@ -49,18 +49,25 @@
           <v-layout align-center wrap justify-center row fill-height>
             <v-flex sm6>
               <ul style="list-style: none">
-                <li v-for="item in data.items.general">
+                  <li v-for="(item, index) in data.items.general">
                   <v-layout row>
                     <v-flex xs4>
                       <v-subheader>{{ item.key }}</v-subheader>
                     </v-flex>
                     <v-flex xs7>
                       <v-text-field
-                        v-model="item.value"
+                        @input="generalChangeHandler($event, index)"                        
+                        :value="item.value"
                       ></v-text-field>
                     </v-flex>
                     <v-flex sm1>
-                      <v-btn icon ripple>
+                      <v-btn 
+                        icon
+                        ripple
+                        @click="generalDeleteHandler($event, index
+
+                        )"
+                      >
                         <v-icon color="red lighten-1">delete</v-icon>
                       </v-btn>
                     </v-flex>
@@ -166,11 +173,15 @@
       // make new component from head and store sync functionality within that component
     },
     methods: {
-      generalAddHandler() {
-        this.$store.dispatch("addHostConfig", {mainIndex: this.$route.params.id, key: this.toAddKey, value: this.toAddValue})                
+      generalAddHandler() {        
+        this.$store.dispatch("addGeneralConfig", {key: this.toAddKey, value: this.toAddValue})
       },
-      generalChangeHandler() {},
-      generalDeleteHandler() {},
+      generalChangeHandler(value, index) {
+        this.$store.dispatch("updateGeneralConfig", {index: index, value: value})        
+      },
+      generalDeleteHandler(value, index) {
+        this.$store.dispatch("removeGeneralConfig", {index: index})
+      },
       specificAddHandler() {},
       specificChangeHandler() {},
       specificDeleteHandler() {},
@@ -181,7 +192,7 @@
       changeHandler(value, index) {  
         this.$store.dispatch("updateHostConfig", {mainIndex: this.$route.params.id, specificIndex: index, value: value})
       },
-      addHandler() {
+      addHandler() {        
         this.$store.dispatch("addHostConfig", {mainIndex: this.$route.params.id, key: this.toAddKey, value: this.toAddValue})        
         this.dialog = false        
       },
