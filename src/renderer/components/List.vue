@@ -64,9 +64,7 @@
                       <v-btn 
                         icon
                         ripple
-                        @click="generalDeleteHandler($event, index
-
-                        )"
+                        @click="generalDeleteHandler($event, index)"
                       >
                         <v-icon color="red lighten-1">delete</v-icon>
                       </v-btn>
@@ -91,15 +89,11 @@
                 </v-btn>
               </template>
               <v-card>
-                <v-card-title class="headline">Add New Host</v-card-title>
-                <v-card-text>
+                <v-card-title class="headline">Add New Specific Host</v-card-title>
+                <v-card-text>                  
                   <v-text-field
-                    v-model="toAddKey"                      
-                    label="Key"                    
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="toAddValue"
-                    label="Value"                    
+                    v-model="toAddTitle"
+                    label="Title"                    
                   ></v-text-field>
                   <v-text-field
                     v-model="toAddLabel"
@@ -108,12 +102,12 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" flat @click="resetDialog">Cancel</v-btn>
-                  <v-btn color="green darken-1" flat @click="generalAddHandler">Add</v-btn>
+                  <v-btn color="red darken-1" flat @click="resetDialog">Cancel</v-btn>                  
+                  <v-btn v-if="dialogMode == 'add'" color="green darken-1" flat @click="specificAddHandler">Add</v-btn>
+                  <v-btn v-if="dialogMode == 'edit'" color="green darken-1" flat @click="specificChangeHandler">Save</v-btn>
                 </v-card-actions>
               </v-card>
-            </v-dialog>
-            
+            </v-dialog>            
           </v-subheader>
 
           <v-list-tile
@@ -138,13 +132,13 @@
               </v-btn>              
             </v-list-tile-action>
             <v-list-tile-action>
-              <v-btn icon ripple @click="dialog = true">
+              <v-btn icon ripple @click="specificChangeLoader($event, index)">
                 <v-icon color="primary lighten-1">edit</v-icon>
               </v-btn>              
             </v-list-tile-action>
             <v-list-tile-action>
               <v-btn icon ripple>
-                <v-icon color="red lighten-1">delete</v-icon>
+                <v-icon color="red lighten-1" @click="specificDeleteHandler($event, index)">delete</v-icon>
               </v-btn>
             </v-list-tile-action>
             
@@ -175,6 +169,7 @@
     methods: {
       generalAddHandler() {        
         this.$store.dispatch("addGeneralConfig", {key: this.toAddKey, value: this.toAddValue})
+        this.resetDialog()
       },
       generalChangeHandler(value, index) {
         this.$store.dispatch("updateGeneralConfig", {index: index, value: value})        
@@ -182,35 +177,48 @@
       generalDeleteHandler(value, index) {
         this.$store.dispatch("removeGeneralConfig", {index: index})
       },
-      specificAddHandler() {},
-      specificChangeHandler() {},
-      specificDeleteHandler() {},
+      specificChangeLoader(value, index) {        
+        this.specificDialog = true
+        this.dialogMode = "edit"
 
-      deleteHandler(value, index) {        
-        this.$store.dispatch("removeHostConfig", {mainIndex: this.$route.params.id, specificIndex: index})
+        var toChange = this.data.items.specific[index]
+        this.toAddTitle = toChange.title
+        this.toAddLabel = toChange.label
+        this.toChangeIndex = index
       },
-      changeHandler(value, index) {  
-        this.$store.dispatch("updateHostConfig", {mainIndex: this.$route.params.id, specificIndex: index, value: value})
+      specificChangeHandler() {        
+        this.$store.dispatch("updateSpecificConfig", {index: this.toChangeIndex, title: this.toAddTitle, label: this.toAddLabel})
+        this.resetDialog()
       },
-      addHandler() {        
-        this.$store.dispatch("addHostConfig", {mainIndex: this.$route.params.id, key: this.toAddKey, value: this.toAddValue})        
-        this.dialog = false        
+      specificAddHandler() {        
+        this.$store.dispatch("addSpecificConfig", {title: this.toAddTitle, label: this.toAddLabel})
+        this.resetDialog()
+      },      
+      specificDeleteHandler(value, index) {
+        this.$store.dispatch("removeSpecificConfig", {index: index})
       },
+      
       resetDialog() {
         this.generalDialog = false
         this.specificDialog = false
         this.toAddKey = ''
+        this.toAddTitle = ''
         this.toAddValue = ''
         this.toAddLabel = ''
+        this.dialogMode = 'add'
+        this.toChangeIndex = null
       }
     },
     data() {      
       return {
         generalDialog: false,
         specificDialog: false,
+        dialogMode: 'add',
         toAddLabel: '',
         toAddKey: '',
+        toAddTitle: '',
         toAddValue: '',
+        toChangeIndex: null,
         electron: process.versions.electron,
         name: this.$route.name,
         node: process.versions.node,

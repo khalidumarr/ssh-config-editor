@@ -63,18 +63,16 @@ const mutations = {
   UPDATE_GENERAL_CONFIG(state, data) {        
     state.items.general[data.index].value = data.value
   },
-  ADD_HOST(state, host) {
-    state.items.specific.push(host)
+  ADD_SPECIFIC_CONFIG(state, data) {
+    state.items.specific.push(data)
   },
-  REMOVE_HOST(state, indexToRemove) {
-    var index = state.items.specific.indexOf(indexToRemove)
-    if (index > -1) {
-      state.items.specific = state.items.specific.splice(index, 1)
-    }
+  REMOVE_SPECIFIC_CONFIG(state, data) {       
+    state.items.specific.splice(data.index, 1)    
   },
-  UPDATE_HOST(state, index, value) {
-    state.items.specific[index] = value
-  },
+  UPDATE_SPECIFIC_CONFIG(state, data) {        
+    state.items.specific[data.index].title = data.title
+    state.items.specific[data.index].label = data.label
+  },  
   ADD_HOST_CONFIG(state, data) {
     state.items.specific[data.mainIndex]['items'].push({ key: data.key, value: data.value})
   },
@@ -103,6 +101,24 @@ const actions = {
   updateGeneralConfig({ commit, state }, data) {
     return new Promise((resolve, reject) => {
       commit('UPDATE_GENERAL_CONFIG', data);
+      resolve()
+    });    
+  },
+  addSpecificConfig({ commit, state }, data) {
+    return new Promise((resolve, reject) => {      
+      commit('ADD_SPECIFIC_CONFIG', data);
+      resolve()
+    });        
+  },
+  removeSpecificConfig({ commit, state }, data) {
+    return new Promise((resolve, reject) => {      
+      commit('REMOVE_SPECIFIC_CONFIG', data);
+      resolve()
+    });            
+  },
+  updateSpecificConfig({ commit, state }, data) {
+    return new Promise((resolve, reject) => {
+      commit('UPDATE_SPECIFIC_CONFIG', data);
       resolve()
     });    
   },
